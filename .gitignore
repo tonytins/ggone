@@ -192,16 +192,3 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.toptal.com/developers/gitignore/api/macos,linux,windows,rust,clion,backup,visualstudiocode,executable
-$RECYCLE.BIN/
-
-# Windows Installer files
-*.cab
-*.msi
-*.msm
-*.msp
-
-# Windows shortcuts
-*.lnk
-
-
-# End of https://www.gitignore.io/api/rust,macos,linux,windows,intellij+iml,visualstudiocode
