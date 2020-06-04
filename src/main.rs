@@ -2,44 +2,47 @@ use ggez;
 use ggez::{event, Context, GameResult};
 use ggez::graphics;
 use ggez::nalgebra as na;
+use std::env;
+use std::path;
 
 /*
-This is based off of the example on ggez's homepage
-in order to a proper feel of the engine.
+Based on examples from:
+https://github.com/ggez/ggez/tree/master/examples
 */
 
 struct MainState {
-    circle_x: f32,
+    frames: usize,
+    fps_text: graphics::Text,
 }
 
 impl MainState {
-    fn new() -> GameResult<MainState> {
-        let state = MainState { circle_x: 0.0 };
+    fn new(ctx: &mut Context) -> GameResult<MainState> {
+        let font = graphics::Font::new(ctx, "/DejaVuSerif.ttf")?;
+        let fps = format!("FPS: {}", ggez::timer::fps(ctx));
+        let fps_text = graphics::Text::new((fps, font, 25.0));
+        let state = MainState { frames: 0, fps_text };
         Ok(state)
     }
 }
 
 impl event::EventHandler for MainState {
     fn update(&mut self, _ctx: &mut Context) -> GameResult<()> {
-        // Slowly move circle to the right
-        self.circle_x = self.circle_x % 800.0 + 1.0;
         Ok(())
     }
 
     fn draw(&mut self, _ctx: &mut Context) -> GameResult<()> {
         graphics::clear(_ctx, [0.1, 0.2, 0.3, 1.0].into());
 
-        let circle = graphics::Mesh::new_circle(
-            _ctx,
-            graphics::DrawMode::fill(), // mode
-            na::Point2::new(self.circle_x, 380.0),
-            100.0, // radius
-            2.0, // tolerance
-            graphics::WHITE,
-        )?;
+        let dest_point = na::Point2::new(10.0, 10.0);
 
-        graphics::draw(_ctx, &circle,
-                       (na::Point2::new(0.0,0.0),))?;
+        self.frames += 1;
+
+        if (self.frames % 100) == 0 {
+            graphics::draw(_ctx, &self.fps_text, (dest_point,))?;
+        } else {
+            graphics::draw(_ctx, &self.fps_text, (dest_point,))?;
+        }
+
         graphics::present(_ctx)?;
 
         Ok(())
@@ -47,8 +50,17 @@ impl event::EventHandler for MainState {
 }
 
 fn main() -> GameResult {
-    let cb = ggez::ContextBuilder::new("ggez_example","tonytins");
+    let resource_dir = if let Ok(manifest_dir) = env::var("CARGO_MANIFEST_DIR") {
+        let mut path = path::PathBuf::from(manifest_dir);
+        path.push("resources");
+        path
+    } else {
+        path::PathBuf::from("./resources")
+    };
+
+    let cb = ggez::ContextBuilder::new("ggez_example","tonytins")
+        .add_resource_path(resource_dir);
     let (ctx, event_loop) = &mut cb.build()?;
-    let state = &mut MainState::new()?;
+    let state = &mut MainState::new(ctx)?;
     event::run(ctx, event_loop, state)
 }
