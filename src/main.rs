@@ -1,14 +1,36 @@
-use ggez;
-use ggez::{event, Context, GameResult};
-use ggez::graphics;
-use ggez::nalgebra as na;
 use std::env;
 use std::path;
+use std::time::{Duration, Instant};
+use std::collections::LinkedList;
+
+use ggez;
+use ggez::{event, graphics, Context, GameResult};
+use ggez::event::{KeyCode, KeyMods};
+use ggez::nalgebra as na;
+use rand;
+use rand::Rng;
 
 /*
 Based on examples from:
 https://github.com/ggez/ggez/tree/master/examples
 */
+
+const GRID_SIZE: (i16, i16) = (30, 20);
+const GRID_CELL_SIZE: (i16, i16) = (32, 32);
+
+const SCREEN_SIZE: (f32, f32) = (
+    GRID_SIZE.0 as f32 * GRID_CELL_SIZE.0 as f32,
+    GRID_SIZE.1 as f32 * GRID_CELL_SIZE.1 as f32,
+    );
+
+const UPDATES_PER_SEC: f32 = 8.0;
+const MILLIS_PER_UPDATE: u64 = (1.0 / UPDATES_PER_SEC * 1000.0) as u64;
+
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+struct GridPosition {
+    x: i16,
+    y: i16,
+}
 
 struct MainState {
     frames: usize,
