@@ -1,3 +1,5 @@
+mod snake;
+
 use std::env;
 use std::path;
 use std::time::{Duration, Instant};
@@ -45,55 +47,6 @@ struct MainState {
     fps_text: graphics::Text,
 }
 
-trait ModuloSigned {
-    fn modulo(&self, n: Self) -> Self;
-}
-
-impl Direction {
-    pub fn inverse(&self) -> Self {
-        match *self {
-            Direction::Up => Direction::Down,
-            Direction::Down => Direction::Up,
-            Direction::Left => Direction::Right,
-            Direction::Right => Direction::Left,
-        }
-    }
-
-    pub fn from_keycode(key: KeyCode) -> Option<Direction> {
-        match key {
-            KeyCode::Up => Some(Direction::Up),
-            KeyCode::Down => Some(Direction::Down),
-            KeyCode::Left => Some(Direction::Left),
-            KeyCode::Right => Some(Direction::Right),
-            _ => None,
-        }
-    }
-}
-
-impl<T> ModuloSigned for T where T: std::ops::Add<Output = T> + std::ops::Rem<Output = T> + Clone,
-{
-    fn modulo(&self, n: Self) -> Self {
-        (self.clone() % n.clone() + n.clone()) % n.clone()
-    }
-}
-
-impl GridPosition {
-    pub fn new(x: i16, y: i16) -> Self {
-        GridPosition { x, y }
-    }
-
-    pub fn random(max_x: i16, max_y: i16) -> Self {
-        let mut rng = rand::thread_rng();
-
-        (
-
-            rng.gen_range::<i16, i16, i16>(0, max_x),
-            rng.gen_range::<i16, i16, i16>(0, max_y),
-
-        ).into()
-    }
-
-}
 
 impl MainState {
     fn new(ctx: &mut Context) -> GameResult<MainState> {
